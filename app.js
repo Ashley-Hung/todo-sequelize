@@ -19,6 +19,7 @@ app.get('/', (req, res) => {
   res.send('hello world')
 })
 
+// Login
 app.get('/users/login', (req, res) => {
   res.render('login')
 })
@@ -27,16 +28,17 @@ app.post('/users/login', (req, res) => {
   res.send('login')
 })
 
+// Register
 app.get('/users/register', (req, res) => {
   res.render('register')
 })
 
 app.post('/users/register', (req, res) => {
-  res.send('register')
   const { name, email, password, confirmPassword } = req.body
   User.create({ name, email, password }).then(() => res.redirect('/'))
 })
 
+// Logout
 app.get('/users/logout', (req, res) => {
   res.send('logout')
 })
