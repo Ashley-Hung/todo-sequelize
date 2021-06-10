@@ -24,11 +24,22 @@ router.get('/register', (req, res) => {
 
 router.post('/register', async (req, res) => {
 	const { name, email, password, confirmPassword } = req.body
+	const errors = []
+	if (!name || !email || !password || !confirmPassword) {
+		errors.push({ message: 'The field cannot be empty' })
+	}
+	if (password !== confirmPassword) {
+		errors.push({ message: '密碼與確認密碼不相符' })
+	}
+	if (errors.length) {
+		return res.render('register', { errors, name, email, password })
+	}
+
 	try {
 		const user = await User.findOne({ where: { email } })
 		if (user) {
-			console.log('User already exists')
-			return res.render('register', { name, email, password, confirmPassword })
+			errors.push({ message: 'This Email is Already Registered' })
+			return res.render('register', { errors, name, email, password })
 		}
 
 		const hash = bcrypt.hashSync(password, bcrypt.genSaltSync(10))

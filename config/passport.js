@@ -14,12 +14,12 @@ module.exports = app => {
 				User.findOne({ where: { email } })
 					.then(user => {
 						if (!user) {
-							return done(null, false, req.flash('warning_msg', 'That email id not registered!'))
+							return done(null, false, req.flash('warning_msg', 'That email is not registered!'))
 						}
 
 						const isMatch = bcrypt.compareSync(password, user.password)
 						if (!isMatch) {
-							return done(null, false, req.flash('warning_msg', 'Email or Password incorrect!'))
+							return done(null, false, req.flash('warning_msg', 'Email or Password is incorrect!'))
 						}
 
 						return done(null, user)
