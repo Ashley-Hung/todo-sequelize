@@ -16,33 +16,43 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 
 app.get('/', (req, res) => {
-  res.send('hello world')
+	return Todo.findAll({
+		raw: true,
+		nest: true
+	})
+		.then(todos => {
+			console.log(todos)
+			return res.render('index', { todos })
+		})
+		.catch(error => {
+			return res.status(422).json(error)
+		})
 })
 
 // Login
 app.get('/users/login', (req, res) => {
-  res.render('login')
+	res.render('login')
 })
 
 app.post('/users/login', (req, res) => {
-  res.send('login')
+	res.send('login')
 })
 
 // Register
 app.get('/users/register', (req, res) => {
-  res.render('register')
+	res.render('register')
 })
 
 app.post('/users/register', (req, res) => {
-  const { name, email, password, confirmPassword } = req.body
-  User.create({ name, email, password }).then(() => res.redirect('/'))
+	const { name, email, password, confirmPassword } = req.body
+	User.create({ name, email, password }).then(() => res.redirect('/'))
 })
 
 // Logout
 app.get('/users/logout', (req, res) => {
-  res.send('logout')
+	res.send('logout')
 })
 
 app.listen(PORT, () => {
-  console.log(`App is running on http://localhost:${PORT}`)
+	console.log(`App is running on http://localhost:${PORT}`)
 })
