@@ -24,4 +24,36 @@ router.get('/:id', (req, res) => {
 		.catch(error => console.log(error))
 })
 
+// Update: edit page
+router.get('/:id/edit', async (req, res) => {
+	const UserId = req.user.id
+	const { id } = req.params
+
+	try {
+		const todo = await Todo.findOne({ where: { id, UserId } })
+		res.render('edit', { todo: todo.toJSON() })
+	} catch (error) {
+		console.log(error)
+	}
+})
+
+// Update
+router.put('/:id', async (req, res) => {
+	const UserId = req.user.id
+	const { id } = req.params
+	const { name, isDone } = req.body
+
+	try {
+		const todo = await Todo.findOne({ where: { id, UserId } })
+		if (todo) {
+			todo.name = name
+			todo.isDone = isDone === 'on'
+		}
+		await todo.save()
+		res.redirect(`/todos/${id}`)
+	} catch (err) {
+		console.log(error)
+	}
+})
+
 module.exports = router
