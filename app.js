@@ -21,12 +21,19 @@ app.get('/', (req, res) => {
 		nest: true
 	})
 		.then(todos => {
-			console.log(todos)
 			return res.render('index', { todos })
 		})
 		.catch(error => {
 			return res.status(422).json(error)
 		})
+})
+
+// Detail
+app.get('/todos/:id', (req, res) => {
+	const { id } = req.params
+	return Todo.findByPk(id)
+		.then(todo => res.render('detail', { todo: todo.toJSON() }))
+		.catch(error => console.log(error))
 })
 
 // Login
@@ -44,7 +51,7 @@ app.get('/users/register', (req, res) => {
 })
 
 app.post('/users/register', (req, res) => {
-	const { name, email, password, confirmPassword } = req.body
+	const { name, email, password } = req.body
 	User.create({ name, email, password }).then(() => res.redirect('/'))
 })
 
