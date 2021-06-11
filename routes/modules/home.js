@@ -3,19 +3,16 @@ const router = express.Router()
 
 const { Todo } = require('../../models')
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
 	const UserId = req.user.id
-	return Todo.findAll({
-		raw: true,
-		nest: true,
-		where: { UserId }
-	})
-		.then(todos => {
-			return res.render('index', { todos })
-		})
-		.catch(error => {
-			return res.status(422).json(error)
-		})
+
+	try {
+		const todos = await Todo.findAll({ raw: true, nest: true, where: { UserId } })
+		res.render('index', { todos })
+	} catch (error) {
+		console.log(error)
+		return res.render('error')
+	}
 })
 
 module.exports = router

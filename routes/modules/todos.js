@@ -8,20 +8,29 @@ router.get('/create', (req, res) => {
 	res.render('create')
 })
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
 	const UserId = req.user.id
 	const { name } = req.body
-	return Todo.create({ name, UserId }) // 要把使用者 id 一起存入
-		.then(() => res.redirect('/'))
-		.catch(error => console.log(error))
+	try {
+		await Todo.create({ name, UserId })
+		res.redirect('/')
+	} catch (error) {
+		console.log(error)
+		res.render('error')
+	}
 })
 
 // Read: detail page
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
 	const { id } = req.params
-	return Todo.findByPk(id)
-		.then(todo => res.render('detail', { todo: todo.toJSON() }))
-		.catch(error => console.log(error))
+	const UserId = req.user.id
+	try {
+		const todo = await Todo.findOne({ where: { id, UserId }, raw: true })
+		res.render('detail', { todo })
+	} catch (error) {
+		console.log(error)
+		res.render('error')
+	}
 })
 
 // Update: edit page
@@ -30,8 +39,8 @@ router.get('/:id/edit', async (req, res) => {
 	const { id } = req.params
 
 	try {
-		const todo = await Todo.findOne({ where: { id, UserId } })
-		res.render('edit', { todo: todo.toJSON() })
+		const todo = await Todo.findOne({ where: { id, UserId }, raw: true })
+		res.render('edit', { todo })
 	} catch (error) {
 		console.log(error)
 	}
@@ -45,6 +54,7 @@ router.put('/:id', async (req, res) => {
 
 	try {
 		const todo = await Todo.findOne({ where: { id, UserId } })
+		// update 會把所有符合條件的都更新，為了避免意外情況還是用以下方法
 		if (todo) {
 			todo.name = name
 			todo.isDone = isDone === 'on'

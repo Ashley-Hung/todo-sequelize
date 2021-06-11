@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 const passport = require('passport')
-const { route } = require('./home')
 
 router.get(
 	'/facebook',
